@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- LOGIN -->
+<section id="login " class="mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-lg-6 col-xl-5  mx-auto">
+        <div class="card bg-light pb-xl-4 rounded boxShadow">
+          <div class="card-body  ">
+            <form method="POST" action="" class="login-form py-5 px-4 ">
+
+              {{ form.hidden_tag() }}
+              <div class="d-none">
+                <div class="alert alert-danger" role="alert">
+                  <sup>  Please Enter valid username and password.</sup>
+                </div>
+              </div>
+              <h1 class="text-center">Login</h1>
+              <div class="form-group mt-5 ">
+                {% if form.email.errors %}
+                    {{ form.email(class="is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.email() }}
+                {% endif %}
+                <span data-placeholder="E-mail" ></span>
+              </div>
+
+              <div class="form-group my-4 mb-5">
+                  {% if form.password.errors %}
+                      {{ form.password(class="is-invalid") }}
+                      <div class="invalid-feedback">
+                          {% for error in form.password.errors %}
+                              <span>{{ error }}</span>
+                          {% endfor %}
+                      </div>
+                  {% else %}
+                      {{ form.password() }}
+                  {% endif %}
+                <span data-placeholder="Password"></span>
+              </div>
+
+
+              <div class="form-check mt-3">
+                  {{ form.remember(class="form-check-input") }}
+                  {{ form.remember.label(class="form-check-label ") }}
+              </div>
+            <div class="d-grid gap-2 col-12 mx-auto mt-3">
+                {{ form.submit(class="btn btn-block text-center orangeBtn text-white") }}
+            </div>
+
+
+            </form>
+            <p class="text-center">Don't have account ? <a href="{{ url_for('register') }}"  class="linkColor"> Register now </a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+    <script type="text/javascript">
+        $(".form-group input").on("focus",function(){
+          $(this).addClass("focus");
+        });
+
+        $(".form-group input").on("blur",function(){
+          if($(this).val() == "")
+          $(this).removeClass("focus");
+        });
+      </script>
+{% endblock script %}
+

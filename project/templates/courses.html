@@ -1,0 +1,330 @@
+{% extends 'main_layout.html' %}
+{% block content %}
+
+{{ ratings[1] }}
+
+<section class="pt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-search"></i>
+              </span>
+          </div>
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Category</label>
+          </div>
+          <select class="custom-select" id="inputGroupSelect01">
+            <option selected>All</option>
+            <option value="1">Programing</option>
+            <option value="2">Art</option>
+            <option value="3">Human Rights</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    {% if current_user.user_type == 'organization' %}
+    <div class="text-right pr-4 pb-4 fixed-bottom">
+         <a href="#" class=" addCourseBtn" data-toggle="modal" data-target="#addCourseModal">
+          <img src="{{ url_for('static', filename='./pics/reply-mobile-button.svg') }}" alt="+">
+        </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<section class="my-5 pb-5">
+  <div class="p-3 mt-5">
+    <div class="card-columns">
+
+      {% for course in courses.items %}
+      <a class="card my-2 text-center cardHover course-card" data-toggle="modal" data-target="#courseModal{{ course.course_id }}">
+        <img class="card-img-top border-bottom" src="{{ url_for('static', filename='pics/course_pics/' + course.image) }}"
+          alt="Course Image" height="200">
+        <div class="card-body">
+          <h4 class="card-title">{{ course.author.username }}</h4>
+          <h6 class="card-subtitle mb-2 text-muted">{{ course.name }}</h6>
+
+          {% if ratings[course.course_id] %}
+            {% for n in range(ratings[course.course_id]) %}
+              <span class="fa fa-star checked"></span>
+            {% endfor %}
+            {% for m in range((5 - ratings[course.course_id])) %}
+              <span class="fa fa-star"></span>
+            {% endfor %}
+
+          {% else %}
+          <span class="fa fa-star"></span>
+          <span class="fa fa-star"></span>
+          <span class="fa fa-star"></span>
+          <span class="fa fa-star"></span>
+          <span class="fa fa-star"></span>
+          {% endif %}
+
+
+          <p class="limtTxt card-text">{{ course.description }}</p>
+        </div>
+      </a>
+
+      <!-- course modal-->
+      <div class="modal fade" id="courseModal{{ course.course_id }}" tabindex="-1" aria-labelledby="CourseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{ course.author.username }}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h4 class="text-center pb-2"> {{ course.name }}</h4>
+              <div class="row">
+
+                <div class="col-12 col-md-6 text-center">
+                    <p>{{ course.date.strftime('%d/%m/%Y') }}</p>
+                  <img src="{{ url_for('static', filename='pics/course_pics/' + course.image) }}" alt="" class="border d-block mx-auto">
+
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star checked"></span>
+                  <span class="fa fa-star"></span>
+                  <span class="fa fa-star"></span>
+
+                  <sub class="text-muted">(1000 vote)</sub>
+                </div>
+                <div class="col-12 col-md-6">
+                  <p>{{ course.description }}</p>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              {% if current_user.user_type == 'university' %}
+                  <a class="btn btn-warning text-white" href="mailto:{{ course.email }}">Contact</a>
+              {% elif current_user.user_type == 'student' %}
+                  <button class="btn btn-warning text-white rate-button" data-dismiss="modal" data-toggle="modal" data-target="#rateModal" data-course-id="{{ course.course_id }}">Rate</button>
+              {% endif %}
+              <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End course modal-->
+
+
+
+      {% endfor %}
+
+
+
+    </div>
+
+    <div class="text-center">
+       {% for page_num in courses.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+        {% if courses.page == page_num %}
+          <a class="btn border-warning bg-warning mb-4 ml-1 mr-1 rounded-circle" style="border-width: 5px;" href="{{ url_for('home', page=page_num) }}"> {{ page_num }}</a>
+        {% else %}
+          <a class="btn border-warning mb-4 ml-1 mr-1 rounded-circle" style="border-width: 5px;" href="{{ url_for('course', page=page_num) }}">{{ page_num }}</a>
+        {% endif %}
+      {% else %}
+        ...
+      {% endif %}
+    {% endfor %}
+    </div>
+
+  <script>
+    const c = document.querySelector('.containerr')
+    const indexs = Array.from(document.querySelectorAll('.index'))
+    let cur = -1
+    indexs.forEach((index, i) => {
+      index.addEventListener('click', (e) => {
+        // clear
+        c.className = 'containerr'
+        void c.offsetWidth; // Reflow
+        c.classList.add('open')
+        c.classList.add(`i${i + 1}`)
+        if (cur > i) {
+          c.classList.add('flip')
+        }
+        cur = i
+      })
+    })
+  </script>
+
+  </div>
+</section>
+
+<!-- Modals -->
+
+<!-- Add Course Modal -->
+    {% if current_user.user_type == 'organization' %}
+    <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="CourseModalLabel" aria-hidden="true">
+        <form class="" method="POST" action="" id="lectureForm" enctype="multipart/form-data">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                      <h5 class="modal-title" id="CourseModalLabel">Add New Course</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                </div>
+                <div class="modal-body">
+                        {{ form.hidden_tag() }}
+                    <div class="row">
+
+                    <div class="col-12 col-md-8">
+                        <div class="form-group">
+                            Course Title
+                            <div>
+                                {% if form.title.errors %}
+                                    {{ form.title(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.title(class='form-control') }}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                                E-mail
+                            <div>
+                                {% if form.email.errors %}
+                                    {{ form.email(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.email.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.email(class='form-control', value=current_user.email) }}
+                                {% endif %}
+                            </div>
+
+                        </div>
+                        <div class="form-group">
+                                Description
+                            <div>
+                                {% if form.description.errors %}
+                                    {{ form.description(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.description(class='form-control', rows='5') }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                        <div class="col-md-4 p-4">
+                            <img id="myImg" src="{{ url_for('static', filename='./pics/img2.png', class="m-4") }}">
+                                {% if form.picture.errors %}
+                                    {{ form.picture(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.picture.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.picture(class='inputfile mt-3', id='profile_image_file', accept='image/*') }}
+                                {% endif %}
+                        </div>
+                    </div>
+              </div>
+                <div class="modal-footer bg-light ">
+                        {{ form.submit(class='btn btn-warning text-white') }}
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                     </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    {% endif %}
+<!-- End Add Course Modal -->
+
+<!-- RATE MODAL -->
+{% if current_user.user_type == 'student' %}
+<script>
+    $(document).ready(function(){
+        $('.rate-button').on('click', function(){
+            var course_id = ($(this).attr("data-course-id"));
+            $('#clicked_course_id').val(course_id);
+        });
+    });
+</script>
+<form class="" method="POST" action="">
+{{ form.hidden_tag() }}
+<div class="modal fade" id="rateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+{{ rate_form.clicked_course_id(class='d-none') }}
+<div class="modal-dialog">
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Flask Course</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+      <img src="{{ url_for('static', filename='./pics/kiss.png') }}" height="150">
+
+      <h4>
+          Thanks for your feedback.
+      </h4>
+     <div class="rate pl-5-auto">
+
+        <input type="radio" id="star5" name="rate" value="5" />
+        <label for="star5" title="text">5 stars</label>
+        <input type="radio" id="star4" name="rate" value="4" />
+        <label for="star4" title="text">4 stars</label>
+        <input type="radio" id="star3" name="rate" value="3" />
+        <label for="star3" title="text">3 stars</label>
+        <input type="radio" id="star2" name="rate" value="2" />
+        <label for="star2" title="text">2 stars</label>
+        <input type="radio" id="star1" name="rate" value="1" />
+        <label for="star1" title="text">1 star</label>
+
+        {{ rate_form.rate() }}
+
+     </div>
+  </div>
+  <div class="modal-footer">
+      {{ rate_form.rate_button(class='btn btn-warning text-white') }}
+      <button type="button" class="btn btn-danger" data-bs-dismiss="modal">CLOSE</button>
+  </div>
+  </div>
+</div>
+</div>
+</form>
+{% endif %}
+<!-- END RATE MODAL -->
+
+
+
+    <script type="text/javascript">
+        window.addEventListener('load', function() {
+          document.querySelector('#profile_image_file').addEventListener('change', function() {
+              if (this.files && this.files[0]) {
+                  var img = document.querySelector('#myImg');  // $('img')[0]
+                  img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+              }
+          });
+        });
+    </script>
+
+{% endblock content %}

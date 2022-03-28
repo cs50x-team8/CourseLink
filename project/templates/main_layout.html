@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    {% if title %}
+        <title>CourseLink - {{ title }}</title>
+    {% else %}
+        <title>CourseLink</title>
+    {% endif %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/gh/cferdinandi/smooth-scroll/dist/smooth-scroll.polyfills.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main_style.css') }}">
+  </head>
+
+  {% if title == 'Organizations' %}
+    <body id="home" class="bg-light">
+  {% else %}
+    <body id="home" class="bg-white">
+  {% endif %}
+
+  {% if title == 'Courses' or  title == 'User Profile'%}
+    <nav class="navbar navbar-expand-md navbar-light fixed-top ">
+      <div class="container">
+        <a href="{{ url_for('home') }}" class="navbar-brand">
+          <h3 class="d-inline align-middle">CourseLink</h3>
+        </a>
+        <button type="button" name="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
+          <span >
+            <i class="fa fa-navicon"></i>
+          </span>
+        </button>
+        <div class="collapse navbar-collapse " id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a href="{{url_for('home')}}" class="nav-link">Back To Home</a>
+              </li>
+              <li class="nav-item dropdown mr-3">
+                  <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                    {% if current_user.user_type == 'student' %}
+                      <i class="fa fa-user"></i>
+                    {% elif current_user.user_type == 'university' %}
+                      <i class="fa fa-university"></i>
+                    {% elif current_user.user_type == 'organization' %}
+                      <i class="fa fa-users"></i>
+                    {% endif %}
+                    {{ current_user.username }}
+                  </a>
+                    <div class="dropdown-menu">
+                      <a href="{{ url_for('user_profile') }}" class="dropdown-item">
+                        <i class="fa fa-user-circle"></i> Profile
+                      </a>
+                      <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <i class="fa fa-user-times"> </i> Logout
+                      </a>
+                    </div>
+                  </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  {% else %}
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top ">
+      <div class="container">
+        <a href="{{ url_for('home') }}" class="navbar-brand">
+          <h3 class="d-inline align-middle">CourseLink</h3>
+{#            <img src="{{ url_for('static', filename='./pics/logo_size.jpg') }}" >#}
+
+        </a>
+        <button type="button" name="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarNav">
+          <span >
+            <i class="fa fa-navicon"></i>
+          </span>
+        </button>
+        <div class="collapse navbar-collapse mr-5 pr-5" id="navbarNav">
+          <ul class="navbar-nav ml-auto">
+            {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                <a href="#home" class="nav-link">Home</a>
+              </li>
+              <li class="nav-item">
+                <a href="#about" class="nav-link">About</a>
+              </li>
+              <li class="nav-item">
+                <a href="#organization" class="nav-link">Organizations</a>
+              </li>
+              <li class="nav-item">
+                <a href="#university" class="nav-link">Universities</a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#contact" class="nav-link">Contact</a>
+              </li>
+              <li class="nav-item dropdown pr-5">
+                  <a href="#" class="nav-link dropdown-toggle username_dropdown" data-toggle="dropdown">
+                    {% if current_user.user_type == 'student' %}
+                      <i class="fa fa-user"></i>
+                    {% elif current_user.user_type == 'university' %}
+                      <i class="fa fa-university"></i>
+                    {% elif current_user.user_type == 'organization' %}
+                      <i class="fa fa-users" ></i>
+                    {% endif %}
+                    <span>{{ current_user.username }}</span>
+                  </a>
+                    <div class="dropdown-menu">
+                      <a href="{{ url_for('user_profile') }}" class="dropdown-item">
+                        <i class="fa fa-user-circle"></i> Profile
+                      </a>
+                      <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <i class="fa fa-user-times"> </i> Logout
+                      </a>
+                    </div>
+                  </li>
+            {% else %}
+              <li class="nav-item">
+                <a href="#home" class="nav-link">Home</a>
+              </li>
+              <li class="nav-item">
+                <a href="#about" class="nav-link">About</a>
+              </li>
+              <li class="nav-item">
+                <a href="#organization" class="nav-link">Organizations</a>
+              </li>
+              <li class="nav-item">
+                <a href="#contact" class="nav-link">Contact</a>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+
+  {% if title != 'User Profile' %}
+  <!-- FOOTER -->
+      <footer class="sticky-bottom text-center clip_footer">
+          <div class="clip_footer">
+              <div class="container">
+                  <div class="text-left m-0 pb-2 text-white ml-5 copyright_txt">
+                      <p>&copy; Copyright 2020 CourseLinkTeam</p>
+                  </div>
+                  <div class=" text-white mr-5 pb-2 EduMarkTeam text-left d-none d-lg-block">
+                      <h4 class="border-bottom pb-1">CourseLinkTeam</h4>
+                      <span class="txt"> Asmaa Abrar </span><br>
+                      <a href="mailto:eng.AsmaaAbrar@gmail.com" class="email_Address">
+                          <i class="fa fa-envelope ml-4 email_icon"></i>
+                          eng.AsmaaAbrar@gmail.com
+                      </a><br>
+
+                      <span class="txt"> Ahmed Raad </span><br>
+                      <a href="mailto:ahmed.raad.kadhim@gmail.com" class="email_Address">
+                          <i class="fa fa-envelope ml-4 email_icon"></i>
+                          ahmed.raad.kadhim@gmail.com
+                      </a><br>
+
+                  </div>
+              </div>
+
+  </footer>
+                </div>
+
+  {% endif %}
+  </body>
+  {% block script %}{% endblock %}
+</html>

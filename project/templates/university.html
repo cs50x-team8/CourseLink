@@ -1,0 +1,318 @@
+{% extends 'main_layout.html' %}
+{% block content %}
+
+<section class="pt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+              <span class="input-group-text">
+                <i class="fa fa-search"></i>
+              </span>
+          </div>
+          <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="basic-addon1">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">University</label>
+          </div>
+          <select class="custom-select" id="inputGroupSelect01">
+            <option selected>All</option>
+            <option value="1">Baghdad</option>
+            <option value="2">Al-Iraqia</option>
+            <option value="3">AL-Mustansria</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    {% if current_user.user_type == 'university' %}
+    <div class="text-right pr-4 pb-4 fixed-bottom">
+         <a href="#" class=" addCourseBtn" data-toggle="modal" data-target="#addCourseModal">
+          <img src="{{ url_for('static', filename='./pics/reply-mobile-button.svg') }}" alt="+">
+        </a>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<section class="my-5 pb-5">
+  <div class="p-3 mt-5">
+    <div class="card-columns">
+
+      {% for course in courses.items %}
+      <a class="card my-2 text-center cardHover" data-toggle="modal" data-target="#courseModal{{ course.course_id }}" data-course_id="{{ course.course_id }}">
+        <img class="card-img-top border-bottom" src="{{ url_for('static', filename='pics/uni_course_pics/' + course.image) }}"
+          alt="Course Image" height="200">
+        <div class="card-body">
+          <h4 class="card-title">{{ course.course_title }}</h4>
+          <h6 class="card-subtitle mb-2 text-muted">{{ course.org_name }}</h6>
+          <h6 class="card-subtitle mb-2 text-muted">{{ course.uni_name }}</h6>
+          <p class="limtTxt card-text">{{ course.description }}</p>
+        </div>
+      </a>
+
+      <!-- course modal-->
+      <div class="modal fade" id="courseModal{{ course.course_id }}" tabindex="-1" aria-labelledby="CourseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">{{ course.uni_name }}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <h4 class="text-center pb-2">{{ course.course_title }}</h4>
+              <h6 class="text-center pb-2 sub-title">{{ course.org_name }}</h6>
+              <div class="row">
+                <div class="col-12 col-md-6 text-center">
+                  <img src="{{ url_for('static', filename='pics/uni_course_pics/' + course.image) }}" alt="" class="border d-block mx-auto">
+                    <h6><i class="fas fa-map-marker-alt"></i>{{ course.location }}</h6>
+                </div>
+                <div class="col-12 col-md-6">
+                  <p>{{ course.description }}</p>
+                    <h6>date: From {{ course.start_date }} To {{ course.end_date }}</h6>
+                    <h6>time: From {{ course.start_time }} To {{ course.end_time }}</h6>
+                    <h6>
+                        days in week:
+                        {% for day in available_days %}
+                            <span>
+                                {% if available_days.index(day) != (available_days|length - 1) %}
+                                    {{ day }},
+                                {% else %}
+                                    {{ day }}
+                                {% endif %}
+                            </span>
+                        {% endfor %}
+                    </h6>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                {% if current_user.user_type == 'student' %}
+                  <a class="btn btn-warning text-white" href="mailto:{{ course.org_email }}">JOIN</a>
+                {% else %}
+                  <a class="btn btn-warning text-white" href="mailto:{{ course.org_email }}">CONTACT</a>
+                {% endif %}
+              <button type="button" class="btn btn-danger" data-dismiss="modal">CLOSE</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End course modal-->
+
+      {% endfor %}
+
+
+
+    </div>
+
+    <div class="text-center">
+       {% for page_num in courses.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if page_num %}
+        {% if courses.page == page_num %}
+          <a class="btn border-warning bg-warning mb-4 ml-1 mr-1 rounded-circle" style="border-width: 5px;" href="{{ url_for('home', page=page_num) }}"> {{ page_num }}</a>
+        {% else %}
+          <a class="btn border-warning mb-4 ml-1 mr-1 rounded-circle" style="border-width: 5px;" href="{{ url_for('course', page=page_num) }}">{{ page_num }}</a>
+        {% endif %}
+      {% else %}
+        ...
+      {% endif %}
+    {% endfor %}
+    </div>
+
+  <script>
+    const c = document.querySelector('.containerr')
+    const indexs = Array.from(document.querySelectorAll('.index'))
+    let cur = -1
+    indexs.forEach((index, i) => {
+      index.addEventListener('click', (e) => {
+        // clear
+        c.className = 'containerr'
+        void c.offsetWidth; // Reflow
+        c.classList.add('open')
+        c.classList.add(`i${i + 1}`)
+        if (cur > i) {
+          c.classList.add('flip')
+        }
+        cur = i
+      })
+    })
+  </script>
+
+  </div>
+</section>
+
+<!-- Modal -->
+<!-- Add Course Modal -->
+    <div class="modal fade" id="addCourseModal" tabindex="-1" aria-labelledby="CourseModalLabel" aria-hidden="true">
+        <form class="" method="POST" action="" id="lectureForm" enctype="multipart/form-data">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-light">
+                      <h5 class="modal-title" id="CourseModalLabel">Add New Course On Your University</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                </div>
+                <div class="modal-body">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+
+                    <div class="col-12 col-md-8">
+                        <div class="row mb-3">
+                            <div class="col">
+                                Course title
+                                {{ form.course_title(class='form-control') }}
+                            </div>
+                            <div class="col">
+                                Organization
+                                {{ form.org_name(class='form-control') }}
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            location
+                            {{ form.location(class='form-control') }}
+                        </div>
+                        <div>
+                          <table>
+                            <tr>
+                                How many days in Week
+                                    <td>
+                                    <div class="checkbox-group" id="checkboxes">
+                                         <ul>
+                                         <li>
+                                            <input type="checkbox" id="mon" name="days" value="monday"/>
+                                            <label for="mon">MON</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="tue" name="days" value="tuesday"/>
+                                            <label for="tue">TUE</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="wed" name="days" value="wednesday"/>
+                                            <label for="wed">WED</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="thur" name="days" value="thursday"/>
+                                            <label for="thur">THUR</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="fri" name="days" value="friday"/>
+                                            <label for="fri">FRI</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="sat" name="days" value="saturday"/>
+                                            <label for="sat">SAT</label>
+                                         </li>
+                                         <li>
+                                            <input type="checkbox" id="sun" name="days" value="sunday"/>
+                                            <label for="sun">SUN</label>
+                                         </li>
+                                         </ul>
+                                  </div>
+                        <span id="allChecked" style="display:block; width:425px; text-align:center; color:#999999;">
+                                            (all days selected)
+                                        </span>
+                                    </td>
+                                </tr>
+
+                        </table>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                Date start at
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                            <div class="col">
+                                Date end at
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                Time start at
+                                <input type="time" class="form-control" name="start_time">
+                            </div>
+                            <div class="col">
+                                Time end at
+                                <input type="time" class="form-control" name="end_time">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                                Description
+                            <div>
+                                {% if form.description.errors %}
+                                    {{ form.description(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.description(class='form-control', rows='5') }}
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                        <div class="col-md-4 p-4">
+                            <img id="myImg" src="{{ url_for('static', filename='./pics/img2.png', class="m-4") }}">
+                                {% if form.picture.errors %}
+                                    {{ form.picture(class='is-invalid') }}
+                                    <div class="invalid-feedback">
+                                    {% for error in form.picture.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.picture(class='inputfile mt-3', id='profile_image_file', accept='image/*') }}
+                                {% endif %}
+                        </div>
+                    </div>
+              </div>
+                <div class="modal-footer bg-light ">
+                        {{ form.submit(class='btn btn-warning text-white') }}
+                      <button type="button" class="btn btn-danger" data-dismiss="modal">CLose</button>
+                     </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+            window.addEventListener('load', function() {
+          document.querySelector('#profile_image_file').addEventListener('change', function() {
+              if (this.files && this.files[0]) {
+                  var img = document.querySelector('#myImg');  // $('img')[0]
+                  img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+              }
+          });
+        });
+        $( document ).ready( function(){
+            var checkboxes = $( ':checkbox' ),
+                span       = $( '#allChecked' );
+
+            checkboxes.prop( 'checked', true );
+
+            checkboxes.on( 'change', function(){
+                var checked = checkboxes.filter( ':checked' );
+                if ( checked.length == checkboxes.length )
+                    span.text( '(All Days Selected)' );
+                else
+                {
+                    var days = jQuery.map( checked, function( n,i ){ return n.id; } );
+                    span.text( '(' + days.join(', ') + ' Selected)' );
+                }
+            } );
+        });
+    </script>
+
+{% endblock content %}

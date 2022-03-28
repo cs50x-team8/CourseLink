@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- REGISTER -->
+<section id="login " class="mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8 col-lg-6  mx-auto">
+        <div class="card bg-light rounded boxShadow">
+          <div class="card-body ">
+            <form method="POST" action="" class="login-form p-4 text-left">
+            {{ form.hidden_tag() }}
+              <h1 class="text-center my-3">Register</h1>
+
+              <div class="input-group mt-5 row">
+                <div class="col-4 text-left">
+                {{ form.username.label() }}
+                </div>
+                {% if form.username.errors %}
+                  <div class="col">
+                    {{ form.username(class="is_invalid") }}
+                  </div>
+                  <div class="invalid-feedback">
+                      {% for error in form.username.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+                {% else %}
+                    <div class="col">
+                    {{ form.username(class="form-control") }}
+                    </div>
+                {% endif %}
+              </div>
+
+              <div class="input-group mt-3 row">
+                <div class="col-4 text-left">
+                    {{ form.email.label() }}
+                </div>
+                {% if form.email.errors %}
+                  <div class="col">
+                  {{ form.email(class="form-control is-invalid") }}
+                  </div>
+                  <div class="invalid-feedback">
+                      {% for error in form.email.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="col">
+                    {{ form.email(class="form-control") }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="input-group mt-3 row">
+                <div class="col-4 text-left">
+                    {{ form.user_type.label() }}
+                </div>
+                {% if form.user_type.errors %}
+                  <div class="col">
+                    {{ form.user_type(class="form-select is-invalid") }}
+                  </div>
+                  <div class="invalid-feedback">
+                      {% for error in form.user_type.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="col">
+                    {{ form.user_type(class="form-select") }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="input-group mt-3 row">
+                <div class="col-4 text-left">
+                  {{ form.password.label() }}
+                </div>
+                {% if form.password.errors %}
+                    <div class="col">
+                      {{ form.password(class="form-control is-invalid") }}
+                    </div>
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="col">
+                      {{ form.password(class="form-control") }}
+                    </div>
+                {% endif %}
+              </div>
+
+              <div class="input-group mt-3 row">
+                <div class="col-4 text-left">
+                  {{ form.confirm_password.label() }}
+                </div>
+                {% if form.confirm_password.errors %}
+                    <div class="col">
+                      {{ form.confirm_password(class="form-control is-invalid") }}
+                    </div>
+                    <div class="invalid-feedback">
+                        {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="col">
+                      {{ form.confirm_password(class="form-control") }}
+                    </div>
+                {% endif %}
+              </div>
+                <div class="d-grid gap-2 col-10 mx-auto mt-5">
+                   {{ form.submit(class="btn text-center orangeBtn text-white") }}
+                </div>
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}

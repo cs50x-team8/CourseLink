@@ -1,0 +1,168 @@
+{% extends 'main_layout.html' %}
+{% block content %}
+<!-- PROFILE EDIT -->
+    <section id="profile" class="pt-3">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 col-lg-8 col-xl-9">
+            <div class="card">
+              <div class="card-header">
+                <h4>Edit Profile</h4>
+              </div>
+              <form class="" method="POST" action="">
+              {{ form.hidden_tag() }}
+              <div class="card-body pb-0">
+                  <div class="form-group">
+                    {{ form.username.label() }}
+                    {{ form.username(class="form-control", value=current_user.username) }}
+                  </div>
+                  <div class="form-group">
+                    {{ form.email.label() }}
+                    {{ form.email(class="form-control", value=current_user.email) }}
+                  </div>
+                    <div class="row">
+                       <div class="col-12 col-md-8">
+                        {{ form.description.label() }}
+                        {% if current_user.description %}
+                          {{ form.description(class="form-control ", aria_label="With textarea", rows="5", value=current_user.description) }}
+                        {% else %}
+                          {{ form.description(class=" form-control ", placeholder="Add a bio ", aria_label="With textarea", rows="5" )}}
+                        {% endif %}
+                      </div>
+                    <div class="d-none d-md-block col-md-4">
+                        <img src="{{ url_for('static', filename='./pics/info.png') }}"
+                          alt="info image" height="210">
+                    </div>
+                    </div>
+              </div>
+                  <div class="card-footer text-right">
+                    {{ form.save_changes(class='btn btn-primary', bgColor="orange" , onclick="successAlert('change sucess')") }}
+                    <button class="btn orangeBtn" type="button" name="change_password" data-toggle="modal" data-target="#passwordModal">Change Password</button>
+                  </div>
+              </form>
+
+            </div>
+          </div>
+          <div class="col-lg-4 col-xl-3 pt-5">
+                 <img src="{{ url_for('static', filename='pics/profile_pics/' + current_user.image) }}" alt="User Image" class="d-block mb-3 bg-light mx-auto" width="250" height="250">
+                <button class="btn btn-primary btn-block px-5 " data-dismiss="modal" data-toggle="modal" data-target="#changeImageModal"><i class="fa fa-edit"></i> Change Image</button>
+                <button id="card1" class="btn btn-danger btn-block"><i class="fa fa-trash"></i> Delete Image</button>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PASSWORD MODAL -->
+<div class="modal fade" id="passwordModal">
+      <div class="modal-dialog modal-dialog-centered modal-lg ">
+        <div class="modal-content">
+            <form class="" method="POST" action="">
+            {{ form.hidden_tag() }}
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" >Change Password</h5>
+                <button class="close" data-dismiss="modal"><span>&times;</span> </button>
+              </div>
+              <div class="modal-body">
+                  <div class="form-group">
+                      {{ password_form.old_password.label() }}
+                      {% if password_form.old_password.errors %}
+                        {{ password_form.old_password(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.old_password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                      {% else %}
+                        {{ password_form.old_password(class="form-control") }}
+                      {% endif %}
+                  </div>
+                  <div class="form-group">
+                      {{ password_form.new_password.label() }}
+                      {% if password_form.new_password.errors %}
+                        {{ password_form.new_password(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.new_password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                      {% else %}
+                        {{ password_form.new_password(class="form-control") }}
+                      {% endif %}
+                  </div>
+                  <div class="form-group">
+                      {{ password_form.confirm_new_password.label() }}
+                      {% if password_form.confirm_new_password.errors %}
+                        {{ password_form.confirm_new_password(class="form-control is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.confirm_new_password.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                      {% else %}
+                        {{ password_form.confirm_new_password(class="form-control") }}
+                      {% endif %}
+                  </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-danger" data-dismiss="modal">Close</button>
+                  {{ password_form.update_password(class="btn btn-primary", id="done", onclick="successAlert('Password change successfully')") }}
+              </div>
+            </form>
+        </div>
+      </div>
+</div>
+
+      <!--Chang Image Modal -->
+      <div class="modal fade" id="changeImageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <form class="" method="POST" action="" enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+          <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-body text-center" >
+                        <img id="profileImg" src="{{ url_for('static', filename='pics/profile_pics/' + current_user.image) }}" width="400" height="400">
+                    </div>
+                    <div class="modal-footer">
+
+                        {{ img_form.image(id="profile_image_file", class="inputfile", accept="image/*") }}
+                        {{ img_form.change_image(class="btn btn-primary btn-rounded btn-md ml-3", id="done", onclick="successAlert('Image change successfully')") }}
+                        <button class="btn btn-danger btn-rounded btn-md ml-3" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+          </form>
+      </div>
+    <script type="text/javascript">
+        window.addEventListener('load', function() {
+          document.querySelector('#profile_image_file').addEventListener('change', function() {
+              if (this.files && this.files[0]) {
+                  var img = document.querySelector('#profileImg');  // $('img')[0]
+                  img.src = URL.createObjectURL(this.files[0]); // set src to blob url
+              }
+          });
+        });
+
+        const card1_effect=document.getElementById('card1');
+        card1_effect.onclick=function(){
+          Swal.fire({
+            icon: 'warning',
+            iconColor: '#ffc107f0' ,
+            title: 'Are you sure?',
+            text: 'It will be deleted !',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#ffc107f0',
+              confirmButtonText: 'Yes, delete it!'
+
+
+          }).then(function() {
+              Swal.fire(
+                'Deleted!',
+                'Your image has been deleted.',
+                'success'
+              );
+            })
+        }
+
+    </script>
+{% endblock content %}
